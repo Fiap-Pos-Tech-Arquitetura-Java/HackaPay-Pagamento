@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "valor": {
+          "type": "number"
+        },
+        "descricao": {
+          "type": "string"
+        },
+        "metodo_pagamento": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "valor",
+        "descricao",
+        "metodo_pagamento",
+        "status"
+      ]
+    }
+  ]
+}
