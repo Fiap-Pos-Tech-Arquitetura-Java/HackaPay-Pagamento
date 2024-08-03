@@ -9,7 +9,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/hackapay-pagamento-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5435/hackapay-pagamento-db
       - SPRING_DATASOURCE_USERNAME=hackaPay
       - SPRING_DATASOURCE_PASSWORD=hackaPayPagamento
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
@@ -18,9 +18,9 @@ services:
   db:
     image: postgres:latest
     container_name: hackapay-pagamento-db
-    command: -p 5432
+    command: -p 5435
     ports:
-      - "5432:5432"
+      - "5435:5435"
     environment:
       - POSTGRES_USER=hackaPay
       - POSTGRES_PASSWORD=hackaPayPagamento
