@@ -1,8 +1,11 @@
 package br.com.fiap.postech.hackapay.pagamento.services;
 
+import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
+import br.com.fiap.postech.hackapay.pagamento.integration.CartaoIntegracao;
 import br.com.fiap.postech.hackapay.pagamento.repository.PagamentoRepository;
 import io.micrometer.common.util.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -16,14 +19,16 @@ import java.util.UUID;
 public class PagamentoServiceImpl implements PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;
+    private final CartaoIntegracao cartaoIntegracao;
 
     @Autowired
-    public PagamentoServiceImpl(PagamentoRepository pagamentoRepository) {
+    public PagamentoServiceImpl(PagamentoRepository pagamentoRepository, CartaoIntegracao cartaoIntegracao) {
         this.pagamentoRepository = pagamentoRepository;
+        this.cartaoIntegracao = cartaoIntegracao;
     }
 
     @Override
-    public Pagamento save(Pagamento pagamento) {
+    public PagamentoAutorizacao save(String token, Pagamento pagamento) {
         //if (pagamentoRepository.findByCpf(pagamento.getCpf()).isPresent()) {
         //    throw new IllegalArgumentException("Já existe um pagamento cadastrado com esse cpf.");
         //}
@@ -33,9 +38,11 @@ public class PagamentoServiceImpl implements PagamentoService {
         if (pagamento.getMetodoPagamento() == null) {
             pagamento.setMetodoPagamento("Cartão de Credito - fixa conforme orientacao do professor no discord");
         }
-        pagamento.setStatus("äprovado");
+        cartaoIntegracao.atualizaLimiteCartao(token, pagamento);
+        pagamento.setStatus("aprovado");
         pagamento.setId(UUID.randomUUID());
-        return pagamentoRepository.save(pagamento);
+        pagamentoRepository.save(pagamento);
+        return new PagamentoAutorizacao(RandomStringUtils.randomAlphabetic(10));
     }
 
     @Override

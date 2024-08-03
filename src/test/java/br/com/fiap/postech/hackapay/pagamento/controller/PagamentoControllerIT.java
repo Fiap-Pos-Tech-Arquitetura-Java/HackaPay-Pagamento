@@ -59,7 +59,7 @@ public class PagamentoControllerIT {
                 .post(PAGAMENTO)
             .then()
                 .statusCode(HttpStatus.CREATED.value())
-                .body(matchesJsonSchemaInClasspath("schemas/pagamento.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/pagamento.autorizacao.schema.json"));
         }
 
         @Test

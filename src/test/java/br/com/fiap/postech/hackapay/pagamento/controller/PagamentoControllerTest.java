@@ -1,8 +1,11 @@
 package br.com.fiap.postech.hackapay.pagamento.controller;
 
+import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.helper.PagamentoHelper;
+import br.com.fiap.postech.hackapay.pagamento.integration.CartaoIntegracao;
 import br.com.fiap.postech.hackapay.pagamento.services.PagamentoService;
+import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +36,14 @@ class PagamentoControllerTest {
     private MockMvc mockMvc;
     @Mock
     private PagamentoService pagamentoService;
+    @Mock
+    private SecurityHelper securityHelper;
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        PagamentoController pagamentoController = new PagamentoController(pagamentoService);
+        PagamentoController pagamentoController = new PagamentoController(pagamentoService, securityHelper);
         mockMvc = MockMvcBuilders.standaloneSetup(pagamentoController).build();
     }
 
@@ -57,28 +62,29 @@ class PagamentoControllerTest {
         void devePermitirCadastrarPagamento() throws Exception {
             // Arrange
             var pagamento = PagamentoHelper.getPagamento(false);
-            when(pagamentoService.save(any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
+            var pagamentoAutorizacao = new PagamentoAutorizacao("blaBlaBla");
+            when(pagamentoService.save(anyString(), any(Pagamento.class))).thenReturn(pagamentoAutorizacao);
             // Act
             mockMvc.perform(
                             post(PAGAMENTO).contentType(MediaType.APPLICATION_JSON)
                                     .content(asJsonString(pagamento)))
                     .andExpect(status().isCreated());
             // Assert
-            verify(pagamentoService, times(1)).save(any(Pagamento.class));
+            verify(pagamentoService, times(1)).save(anyString(), any(Pagamento.class));
         }
 
         @Test
         void deveGerarExcecao_QuandoRegistrarPagamento_RequisicaoXml() throws Exception {
             // Arrange
             var pagamento = PagamentoHelper.getPagamento(false);
-            when(pagamentoService.save(any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
+            when(pagamentoService.save(anyString(), any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
                             post("/pagamento").contentType(MediaType.APPLICATION_XML)
                                     .content(asJsonString(pagamento)))
                     .andExpect(status().isUnsupportedMediaType());
             // Assert
-            verify(pagamentoService, never()).save(any(Pagamento.class));
+            verify(pagamentoService, never()).save(anyString(), any(Pagamento.class));
         }
     }
     @Nested

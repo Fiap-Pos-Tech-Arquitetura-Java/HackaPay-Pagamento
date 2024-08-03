@@ -1,7 +1,9 @@
 package br.com.fiap.postech.hackapay.pagamento.services;
 
+import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.helper.PagamentoHelper;
+import br.com.fiap.postech.hackapay.pagamento.integration.CartaoIntegracao;
 import br.com.fiap.postech.hackapay.pagamento.repository.PagamentoRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -32,12 +34,15 @@ class PagamentoServiceTest {
     @Mock
     private PagamentoRepository pagamentoRepository;
 
+    @Mock
+    private CartaoIntegracao cartaoIntegracao;
+
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        pagamentoService = new PagamentoServiceImpl(pagamentoRepository);
+        pagamentoService = new PagamentoServiceImpl(pagamentoRepository, cartaoIntegracao);
     }
 
     @AfterEach
@@ -56,10 +61,9 @@ class PagamentoServiceTest {
             var pagamentoSalvo = pagamentoService.save(pagamento);
             // Assert
             assertThat(pagamentoSalvo)
-                    .isInstanceOf(Pagamento.class)
-                    .isNotNull();
-            assertThat(pagamentoSalvo.getNumero()).isEqualTo(pagamento.getNumero());
-            assertThat(pagamentoSalvo.getId()).isNotNull();
+                    .isInstanceOf(PagamentoAutorizacao.class)
+                    .isNotNull();;
+            assertThat(pagamentoSalvo.chavePagamento()).isNotNull();
             verify(pagamentoRepository, times(1)).save(any(Pagamento.class));
         }
     }

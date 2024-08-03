@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "chave_pagamento": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "chave_pagamento"
+  ]
+}

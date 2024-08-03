@@ -1,5 +1,6 @@
 package br.com.fiap.postech.hackapay.pagamento.services;
 
+import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.helper.PagamentoHelper;
 import jakarta.transaction.Transactional;
@@ -38,10 +39,9 @@ public class PagamentoServiceIT {
             var pagamentoSalvo = pagamentoService.save(pagamento);
             // Assert
             assertThat(pagamentoSalvo)
-                    .isInstanceOf(Pagamento.class)
+                    .isInstanceOf(PagamentoAutorizacao.class)
                     .isNotNull();
-            assertThat(pagamentoSalvo.getValor()).isEqualTo(pagamento.getValor());
-            assertThat(pagamentoSalvo.getId()).isNotNull();
+            assertThat(pagamentoSalvo.chavePagamento()).isNotNull();
         }
     }
 

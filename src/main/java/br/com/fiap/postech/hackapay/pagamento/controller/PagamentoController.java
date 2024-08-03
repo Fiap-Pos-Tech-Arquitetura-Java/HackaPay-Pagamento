@@ -1,7 +1,9 @@
 package br.com.fiap.postech.hackapay.pagamento.controller;
 
+import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.services.PagamentoService;
+import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +22,19 @@ import java.util.UUID;
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
+    private final SecurityHelper securityHelper;
 
     @Autowired
-    public PagamentoController(PagamentoService pagamentoService) {
+    public PagamentoController(PagamentoService pagamentoService, SecurityHelper securityHelper) {
         this.pagamentoService = pagamentoService;
+        this.securityHelper = securityHelper;
     }
 
     @Operation(summary = "registra um pagamento")
     @PostMapping
-    public ResponseEntity<Pagamento> save(@Valid @RequestBody Pagamento pagamentoDTO) {
-        Pagamento savedPagamentoDTO = pagamentoService.save(pagamentoDTO);
+    public ResponseEntity<PagamentoAutorizacao> save(@Valid @RequestBody Pagamento pagamentoDTO) {
+        String token = securityHelper.getToken();
+        PagamentoAutorizacao savedPagamentoDTO = pagamentoService.save(token, pagamentoDTO);
         return new ResponseEntity<>(savedPagamentoDTO, HttpStatus.CREATED);
     }
 
