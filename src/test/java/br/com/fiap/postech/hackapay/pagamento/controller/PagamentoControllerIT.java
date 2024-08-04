@@ -1,12 +1,11 @@
 package br.com.fiap.postech.hackapay.pagamento.controller;
 
-
-import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.helper.PagamentoHelper;
 import br.com.fiap.postech.hackapay.pagamento.helper.UserHelper;
+import br.com.fiap.postech.hackapay.pagamento.integration.CartaoIntegracao;
+import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import br.com.fiap.postech.hackapay.security.UserDetailsServiceImpl;
 import io.restassured.RestAssured;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,12 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.UUID;
-
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,6 +36,12 @@ public class PagamentoControllerIT {
     @MockBean
     private UserDetailsServiceImpl userDetailsService;
 
+    @MockBean
+    private CartaoIntegracao cartaoIntegracao;
+
+    @MockBean
+    private SecurityHelper securityHelper;
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;
@@ -51,7 +54,10 @@ public class PagamentoControllerIT {
         void devePermitirCadastrarPagamento() {
             var pagamento = PagamentoHelper.getPagamento(false);
             var userDetails = UserHelper.getUserDetails("umUsuarioQualquer");
+            var token = "token";
             when(userDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
+            doNothing().when(cartaoIntegracao).atualizaLimiteCartao(token, pagamento);
+            when(securityHelper.getToken()).thenReturn(token);
             given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(pagamento)
                     .header(HttpHeaders.AUTHORIZATION, UserHelper.getToken(userDetails.getUsername()))

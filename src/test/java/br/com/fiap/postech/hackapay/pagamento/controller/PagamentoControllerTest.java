@@ -3,7 +3,6 @@ package br.com.fiap.postech.hackapay.pagamento.controller;
 import br.com.fiap.postech.hackapay.pagamento.dto.PagamentoAutorizacao;
 import br.com.fiap.postech.hackapay.pagamento.entities.Pagamento;
 import br.com.fiap.postech.hackapay.pagamento.helper.PagamentoHelper;
-import br.com.fiap.postech.hackapay.pagamento.integration.CartaoIntegracao;
 import br.com.fiap.postech.hackapay.pagamento.services.PagamentoService;
 import br.com.fiap.postech.hackapay.security.SecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,20 +12,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,6 +57,7 @@ class PagamentoControllerTest {
             var pagamento = PagamentoHelper.getPagamento(false);
             var pagamentoAutorizacao = new PagamentoAutorizacao("blaBlaBla");
             when(pagamentoService.save(anyString(), any(Pagamento.class))).thenReturn(pagamentoAutorizacao);
+            when(securityHelper.getToken()).thenReturn("token");
             // Act
             mockMvc.perform(
                             post(PAGAMENTO).contentType(MediaType.APPLICATION_JSON)
