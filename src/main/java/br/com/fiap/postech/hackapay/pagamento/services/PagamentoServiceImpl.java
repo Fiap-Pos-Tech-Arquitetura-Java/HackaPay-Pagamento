@@ -29,9 +29,6 @@ public class PagamentoServiceImpl implements PagamentoService {
 
     @Override
     public PagamentoAutorizacao save(String token, Pagamento pagamento) {
-        //if (pagamentoRepository.findByCpf(pagamento.getCpf()).isPresent()) {
-        //    throw new IllegalArgumentException("Já existe um pagamento cadastrado com esse cpf.");
-        //}
         if (pagamento.getDescricao() == null) {
             pagamento.setDescricao("descricao fixa conforme orientacao do professor no discord");
         }

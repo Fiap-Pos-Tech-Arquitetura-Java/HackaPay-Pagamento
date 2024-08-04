@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
@@ -56,7 +57,7 @@ public class PagamentoControllerIT {
             var userDetails = UserHelper.getUserDetails("umUsuarioQualquer");
             var token = "token";
             when(userDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
-            doNothing().when(cartaoIntegracao).atualizaLimiteCartao(token, pagamento);
+            when(cartaoIntegracao.atualizaLimiteCartao(token, pagamento)).thenReturn(ResponseEntity.ok().build());
             when(securityHelper.getToken()).thenReturn(token);
             given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(pagamento)

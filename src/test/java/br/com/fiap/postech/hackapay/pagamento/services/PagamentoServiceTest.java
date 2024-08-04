@@ -56,6 +56,24 @@ class PagamentoServiceTest {
         void devePermitirCadastrarPagamento() {
             // Arrange
             var pagamento = PagamentoHelper.getPagamento(false);
+            pagamento.setDescricao("mais uma compra");
+            pagamento.setMetodoPagamento("PIX");
+            var token = "token";
+            when(pagamentoRepository.save(any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
+            // Act
+            var pagamentoSalvo = pagamentoService.save(token, pagamento);
+            // Assert
+            assertThat(pagamentoSalvo)
+                    .isInstanceOf(PagamentoAutorizacao.class)
+                    .isNotNull();;
+            assertThat(pagamentoSalvo.chavePagamento()).isNotNull();
+            verify(pagamentoRepository, times(1)).save(any(Pagamento.class));
+        }
+
+        @Test
+        void devePermitirCadastrarPagamento_SemDescricao_MetodoPagamento() {
+            // Arrange
+            var pagamento = PagamentoHelper.getPagamento(false);
             var token = "token";
             when(pagamentoRepository.save(any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
             // Act
