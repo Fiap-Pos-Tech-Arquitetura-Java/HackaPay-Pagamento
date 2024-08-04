@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PagamentoControllerTest {
-    public static final String PAGAMENTO = "/pagamento";
+    public static final String PAGAMENTO = "/pagamentos";
     private MockMvc mockMvc;
     @Mock
     private PagamentoService pagamentoService;
@@ -74,7 +74,7 @@ class PagamentoControllerTest {
             when(pagamentoService.save(anyString(), any(Pagamento.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
-                            post("/pagamento").contentType(MediaType.APPLICATION_XML)
+                            post(PAGAMENTO).contentType(MediaType.APPLICATION_XML)
                                     .content(asJsonString(pagamento)))
                     .andExpect(status().isUnsupportedMediaType());
             // Assert
@@ -84,12 +84,12 @@ class PagamentoControllerTest {
     @Nested
     class BuscarPagamento {
         @Test
-        void devePermitirBuscarPagamentoPorId() throws Exception {
+        void devePermitirBuscarPagamentoPorCpf() throws Exception {
             // Arrange
             var pagamento = PagamentoHelper.getPagamento(true);
             when(pagamentoService.findByCpf(anyString())).thenReturn(List.of(pagamento));
             // Act
-            mockMvc.perform(get("/pagamento/{cpf}", pagamento.getCpf()))
+            mockMvc.perform(get("/pagamentos/cliente/{cpf}", pagamento.getCpf()))
                     .andExpect(status().isOk());
             // Assert
             verify(pagamentoService, times(1)).findByCpf(anyString());

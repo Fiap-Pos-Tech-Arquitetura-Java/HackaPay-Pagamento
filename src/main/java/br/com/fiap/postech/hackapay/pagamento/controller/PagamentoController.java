@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/pagamento")
+@RequestMapping("/pagamentos")
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
@@ -39,7 +39,7 @@ public class PagamentoController {
     }
 
     @Operation(summary = "lista os pagamentos de um CPF")
-    @GetMapping("/{cpf}")
+    @GetMapping("/cliente/{cpf}")
     public ResponseEntity<?> findByCpf(@PathVariable String cpf) {
         try {
             List<Pagamento> pagamentos = pagamentoService.findByCpf(cpf);

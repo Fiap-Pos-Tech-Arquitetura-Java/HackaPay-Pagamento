@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class PagamentoControllerIT {
 
-    public static final String PAGAMENTO = "/hackapay/pagamento";
+    public static final String PAGAMENTO = "/hackapay/pagamentos";
     @LocalServerPort
     private int port;
 
@@ -99,7 +99,7 @@ public class PagamentoControllerIT {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, UserHelper.getToken(userDetails.getUsername()))
             .when()
-                .get(PAGAMENTO + "/{cpf}", cpf)
+                .get(PAGAMENTO + "/cliente/{cpf}", cpf)
             .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(matchesJsonSchemaInClasspath("schemas/pagamento.list.schema.json"));
