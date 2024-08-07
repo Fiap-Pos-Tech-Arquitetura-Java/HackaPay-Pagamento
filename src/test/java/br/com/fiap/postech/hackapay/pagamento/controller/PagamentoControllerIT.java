@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class PagamentoControllerIT {
 
-    public static final String PAGAMENTO = "/hackapay/pagamentos";
+    public static final String PAGAMENTO = "/api/pagamentos";
     @LocalServerPort
     private int port;
 
